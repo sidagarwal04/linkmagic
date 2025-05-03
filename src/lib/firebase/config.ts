@@ -1,6 +1,7 @@
+
 // src/lib/firebase/config.ts
 import { initializeApp, getApps, type FirebaseApp } from "firebase/app";
-import { getAuth, type Auth } from "firebase/auth"; // Import getAuth
+// Removed Auth import
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
@@ -22,6 +23,7 @@ if (!getApps().length) {
   app = getApps()[0];
 }
 
-const auth: Auth = getAuth(app); // Initialize Auth
+// Removed auth initialization and export
+// const auth: Auth = getAuth(app);
 
-export { app, auth }; // Export auth instance
+export { app }; // Only export app instance

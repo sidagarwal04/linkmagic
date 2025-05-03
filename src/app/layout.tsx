@@ -1,8 +1,9 @@
+
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from "@/context/AuthContext"; // Import AuthProvider
+// Removed AuthProvider import
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,10 +23,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} antialiased min-h-screen flex flex-col`}>
-         <AuthProvider> {/* Wrap content with AuthProvider */}
-           {children}
-           <Toaster />
-         </AuthProvider>
+         {/* Removed AuthProvider wrapper */}
+         {children}
+         <Toaster />
       </body>
     </html>
   );

@@ -1,8 +1,9 @@
+
 // src/components/header.tsx
-'use client'; // Make this a client component
+'use client'; // Keep as client component if needed for other interactivity later
 
 import { LinkIcon } from "lucide-react";
-import { AuthButton } from "./auth-button"; // Import AuthButton
+// Removed AuthButton import
 
 export function Header() {
   return (
@@ -12,9 +13,7 @@ export function Header() {
           <LinkIcon className="h-8 w-8" />
           <h1 className="text-2xl font-bold">LinkMagic</h1>
         </div>
-        <div>
-          <AuthButton /> {/* Add the AuthButton component here */}
-        </div>
+        {/* Removed AuthButton */}
       </div>
     </header>
   );
