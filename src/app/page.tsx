@@ -45,7 +45,7 @@ export default function Home() {
         </div>
       </main>
       <footer className="py-4 text-center text-muted-foreground text-sm border-t">
-        Developed by <a href="http://meetsid.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Sid</a>
+        Built with ❤️ by <a href="http://meetsid.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Sid</a> using Firebase Studio
       </footer>
     </>
   );
