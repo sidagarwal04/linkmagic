@@ -28,12 +28,7 @@ import { Label } from "@/components/ui/label"; // Import Label from ui/label for
 
 const formSchema = z.object({
   longUrl: z.string().url({ message: "Please enter a valid URL." }),
-  customAlias: z
-    .string()
-    .optional()
-    .refine((alias) => !alias || /^[a-zA-Z0-9_-]+$/.test(alias), {
-      message: "Alias can only contain letters, numbers, hyphens, and underscores.",
-    }),
+  // Removed customAlias field
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -54,7 +49,6 @@ export function UrlShortenerWithQrCode() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       longUrl: "",
-      customAlias: "",
     },
   });
 
@@ -64,10 +58,9 @@ export function UrlShortenerWithQrCode() {
 
     startTransition(async () => {
       try {
-        // 1. Generate Short URL
+        // 1. Generate Short URL (no custom alias)
         const shortUrlData = await generateShortUrl({
           originalUrl: values.longUrl,
-          customAlias: values.customAlias || undefined,
         });
 
         // 2. Generate QR Code for the *shortened* URL
@@ -90,9 +83,8 @@ export function UrlShortenerWithQrCode() {
         console.error("Error shortening URL:", error);
         let errorMessage = "Failed to shorten URL. Please try again.";
         if (error instanceof Error) {
-          if (error.message.includes("Alias already exists")) {
-             errorMessage = "That custom alias is already taken. Please try another.";
-          } else if (error.message.includes("Invalid URL")) {
+          // Simplified error message handling as alias is removed
+          if (error.message.includes("Invalid URL")) {
              errorMessage = "The URL provided seems invalid. Please check and try again.";
           }
         }
@@ -127,18 +119,14 @@ export function UrlShortenerWithQrCode() {
     }
   };
 
-  const handleAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value.replace(/\s+/g, '-');
-    form.setValue('customAlias', value, { shouldValidate: true });
-  };
-
+  // Removed handleAliasChange function
 
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
         <CardTitle className="text-center text-2xl text-primary">Enter Long URL</CardTitle>
          <CardDescription className="text-center text-muted-foreground">
-           Optionally provide a custom alias. Generates a QR code for the short link.
+           Shorten your long URL and generate a QR code for the short link.
          </CardDescription>
       </CardHeader>
       <CardContent>
@@ -165,31 +153,7 @@ export function UrlShortenerWithQrCode() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="customAlias"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Custom Alias (Optional)</FormLabel> {/* Use FormLabel from ui/form */}
-                  <FormControl>
-                    <div className="relative">
-                       <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground font-mono text-sm">
-                        linkwi.se/
-                       </span>
-                       <Input
-                         placeholder="my-cool-link"
-                         {...field}
-                         onChange={handleAliasChange} // Use custom handler
-                         value={field.value ?? ''} // Ensure value is controlled
-                         className="pl-20" // Adjust padding for prefix
-                         aria-label="Custom Alias Input"
-                       />
-                    </div>
-                  </FormControl>
-                   <FormMessage />
-                </FormItem>
-              )}
-            />
+            {/* Removed Custom Alias FormField */}
             <Button
               type="submit"
               disabled={isPending}
