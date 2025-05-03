@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { ChangeEvent } from "react";
@@ -5,7 +6,7 @@ import React, { useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Link2, Loader2, QrCodeIcon, Scissors, Copy, Check } from "lucide-react";
+import { Link2, Loader2, QrCodeIcon, Scissors, Copy, Check, Download } from "lucide-react";
 import Image from "next/image";
 
 import { Button } from "@/components/ui/button";
@@ -20,8 +21,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { generateShortUrl } from "@/actions/shorten-url"; // Placeholder for server action
-import { generateQrCode, type QrCodeData } from "@/services/qr-code"; // Import QR code service
+import { generateShortUrl } from "@/actions/shorten-url";
+import { generateQrCode, type QrCodeData } from "@/services/qr-code";
 
 const formSchema = z.object({
   longUrl: z.string().url({ message: "Please enter a valid URL." }),
@@ -41,7 +42,7 @@ interface ShortenedUrlResult {
   qrCodeUrl: string;
 }
 
-export function UrlShortenerForm() {
+export function UrlShortenerWithQrCode() {
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<ShortenedUrlResult | null>(null);
   const [copied, setCopied] = useState(false);
@@ -61,20 +62,20 @@ export function UrlShortenerForm() {
 
     startTransition(async () => {
       try {
-        // 1. Generate Short URL (using placeholder action)
+        // 1. Generate Short URL
         const shortUrlData = await generateShortUrl({
           originalUrl: values.longUrl,
           customAlias: values.customAlias || undefined,
         });
 
-        // 2. Generate QR Code
+        // 2. Generate QR Code for the *shortened* URL
         const qrCodeData: QrCodeData = { data: shortUrlData.shortUrl };
         const qrCodeResult = await generateQrCode(qrCodeData);
 
         // 3. Set Result State
         setResult({
           shortUrl: shortUrlData.shortUrl,
-          originalUrl: values.longUrl, // Use the submitted original URL
+          originalUrl: values.longUrl,
           qrCodeUrl: qrCodeResult.imageUrl,
         });
 
@@ -87,13 +88,11 @@ export function UrlShortenerForm() {
         console.error("Error shortening URL:", error);
         let errorMessage = "Failed to shorten URL. Please try again.";
         if (error instanceof Error) {
-          // Check for specific error messages if the action provides them
           if (error.message.includes("Alias already exists")) {
              errorMessage = "That custom alias is already taken. Please try another.";
           } else if (error.message.includes("Invalid URL")) {
              errorMessage = "The URL provided seems invalid. Please check and try again.";
           }
-          // Handle other specific errors if needed
         }
 
         toast({
@@ -101,7 +100,7 @@ export function UrlShortenerForm() {
           description: errorMessage,
           variant: "destructive",
         });
-        setResult(null); // Ensure result is null on error
+        setResult(null);
       }
     });
   }
@@ -114,7 +113,7 @@ export function UrlShortenerForm() {
           title: "Copied!",
           description: "Shortened URL copied to clipboard.",
         });
-        setTimeout(() => setCopied(false), 2000); // Reset icon after 2 seconds
+        setTimeout(() => setCopied(false), 2000);
       }).catch(err => {
         console.error('Failed to copy: ', err);
         toast({
@@ -127,7 +126,6 @@ export function UrlShortenerForm() {
   };
 
   const handleAliasChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // Automatically convert spaces to hyphens for better usability
     const value = event.target.value.replace(/\s+/g, '-');
     form.setValue('customAlias', value, { shouldValidate: true });
   };
@@ -136,9 +134,9 @@ export function UrlShortenerForm() {
   return (
     <Card className="w-full shadow-lg">
       <CardHeader>
-        <CardTitle className="text-center text-2xl text-primary">Enter Your Long URL</CardTitle>
+        <CardTitle className="text-center text-2xl text-primary">Enter Long URL</CardTitle>
          <CardDescription className="text-center text-muted-foreground">
-           Optionally provide a custom alias.
+           Optionally provide a custom alias. Generates a QR code for the short link.
          </CardDescription>
       </CardHeader>
       <CardContent>
@@ -201,7 +199,7 @@ export function UrlShortenerForm() {
               ) : (
                 <Scissors className="mr-2 h-4 w-4" />
               )}
-              {isPending ? "Shortening..." : "Shorten URL"}
+              {isPending ? "Shortening..." : "Shorten & Get QR Code"}
             </Button>
           </form>
         </Form>
@@ -215,7 +213,7 @@ export function UrlShortenerForm() {
         {result && !isPending && (
           <Card className="mt-8 bg-secondary shadow-inner">
             <CardHeader>
-              <CardTitle className="text-center text-xl text-primary">Your Link is Ready!</CardTitle>
+              <CardTitle className="text-center text-xl text-primary">Your Link & QR Code</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="space-y-2">
@@ -249,17 +247,16 @@ export function UrlShortenerForm() {
                   </p>
                 </div>
 
-
                <div className="flex flex-col items-center space-y-2 pt-4">
-                  <Label className="text-sm font-medium">QR Code</Label>
+                  <Label className="text-sm font-medium">QR Code (for Shortened URL)</Label>
                   <div className="rounded-lg border p-2 bg-background shadow-sm">
                      <Image
                         src={result.qrCodeUrl}
                         alt="QR Code for shortened URL"
                         width={150}
                         height={150}
-                        data-ai-hint="qr code"
-                        aria-label="QR Code Image"
+                        data-ai-hint="qr code short link"
+                        aria-label="QR Code Image for Shortened URL"
                       />
                    </div>
                  <Button
@@ -270,7 +267,7 @@ export function UrlShortenerForm() {
                     aria-label="Download QR Code Button"
                   >
                     <a href={result.qrCodeUrl} download={`${result.shortUrl.split('/').pop() || 'qrcode'}.png`}>
-                       <QrCodeIcon className="mr-2 h-4 w-4" />
+                       <Download className="mr-2 h-4 w-4" /> {/* Changed icon */}
                        Download QR
                      </a>
                   </Button>
@@ -284,7 +281,7 @@ export function UrlShortenerForm() {
   );
 }
 
-// Add Label component if not globally available
+// Add Label component if not globally available (already defined in url-shortener-form, but good practice)
 const Label = React.forwardRef<
   React.ElementRef<typeof FormLabel>,
   React.ComponentPropsWithoutRef<typeof FormLabel>
@@ -298,4 +295,3 @@ const Label = React.forwardRef<
   );
 });
 Label.displayName = 'Label';
-
