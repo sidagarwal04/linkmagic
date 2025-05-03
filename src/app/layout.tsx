@@ -15,8 +15,8 @@ const geistSans = Geist({
 // });
 
 export const metadata: Metadata = {
-  title: "LinkWise - Simplify Your Links", // Updated Title
-  description: "Create custom shortened URLs and generate QR codes for free.", // Updated Description
+  title: "LinkMagic - Simplify Your Links", // Updated Title
+  description: "Create custom shortened URLs and generate QR codes for free with LinkMagic.", // Updated Description
 };
 
 export default function RootLayout({

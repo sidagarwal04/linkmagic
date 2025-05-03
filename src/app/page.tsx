@@ -12,7 +12,7 @@ export default function Home() {
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
         <div className="w-full max-w-2xl space-y-8">
            <h2 className="text-3xl font-bold text-center text-primary">
-             LinkWise Tools
+             LinkMagic Tools
            </h2>
            <p className="text-center text-muted-foreground">
              Choose a tool below to get started.
