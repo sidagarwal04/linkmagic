@@ -187,8 +187,8 @@ export function UrlShortenerWithQrCode() {
               disabled={isPending}
               className={cn(
                 "w-full transition-all duration-300 ease-in-out transform hover:scale-105",
-                generateQr ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "bg-primary hover:bg-primary/90 text-primary-foreground" // Conditional styling based on generateQr state
-              )}
+                 generateQr ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "bg-primary hover:bg-primary/90 text-primary-foreground" // Conditional styling based on generateQr state
+               )}
               aria-label={generateQr ? "Shorten URL and Generate QR Code Button" : "Shorten URL Button"}
             >
               {isPending ? (
@@ -224,7 +224,7 @@ export function UrlShortenerWithQrCode() {
                       href={result.shortUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-grow truncate text-accent hover:underline" // Use accent color for link
+                      className="flex-grow truncate text-primary hover:underline" // Use primary color for link
                       aria-label="Shortened URL Link"
                     >
                       {result.shortUrl}
@@ -236,8 +236,8 @@ export function UrlShortenerWithQrCode() {
                      className="h-8 w-8 text-muted-foreground hover:text-foreground transition-colors"
                      aria-label="Copy Shortened URL"
                     >
-                      {/* Use accent color for the check icon when copied */}
-                      {copied ? <Check className="h-4 w-4 text-accent" /> : <Copy className="h-4 w-4" />}
+                      {/* Use primary color for the check icon when copied */}
+                      {copied ? <Check className="h-4 w-4 text-primary" /> : <Copy className="h-4 w-4" />}
                     </Button>
                  </div>
                </div>
