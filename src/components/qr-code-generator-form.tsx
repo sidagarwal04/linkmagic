@@ -164,11 +164,13 @@ export function QrCodeGeneratorForm() {
                       />
                    </div>
                  <Button
+                    variant="outline"
+                    size="sm"
                     asChild
                     className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-2"
                     aria-label="Download QR Code Button"
                   >
-                    <a href={result.qrCodeUrl} download={`qrcode-${Date.now()}.png`}>
+                    <a href={result.qrCodeUrl} download="linkmagic-qr.png">
                        <Download className="mr-2 h-4 w-4" />
                        Download QR
                      </a>
