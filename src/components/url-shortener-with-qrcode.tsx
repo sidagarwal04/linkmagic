@@ -8,6 +8,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Link2, Loader2, QrCodeIcon, Scissors, Copy, Check, Download } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,7 +16,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
+  FormLabel, // Import FormLabel from ui/form
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -23,6 +24,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { useToast } from "@/hooks/use-toast";
 import { generateShortUrl } from "@/actions/shorten-url";
 import { generateQrCode, type QrCodeData } from "@/services/qr-code";
+import { Label } from "@/components/ui/label"; // Import Label from ui/label for direct use outside FormField
 
 const formSchema = z.object({
   longUrl: z.string().url({ message: "Please enter a valid URL." }),
@@ -147,7 +149,7 @@ export function UrlShortenerWithQrCode() {
               name="longUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Long URL</FormLabel>
+                  <FormLabel>Long URL</FormLabel> {/* Use FormLabel from ui/form */}
                   <FormControl>
                     <div className="relative">
                       <Link2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -168,7 +170,7 @@ export function UrlShortenerWithQrCode() {
               name="customAlias"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Custom Alias (Optional)</FormLabel>
+                  <FormLabel>Custom Alias (Optional)</FormLabel> {/* Use FormLabel from ui/form */}
                   <FormControl>
                     <div className="relative">
                        <span className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground font-mono text-sm">
@@ -217,7 +219,7 @@ export function UrlShortenerWithQrCode() {
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="space-y-2">
-                 <Label className="text-sm font-medium">Shortened URL</Label>
+                 <Label className="text-sm font-medium">Shortened URL</Label> {/* Use Label from ui/label */}
                  <div className="flex items-center gap-2 rounded-md border bg-background p-3">
                    <a
                       href={result.shortUrl}
@@ -241,14 +243,14 @@ export function UrlShortenerWithQrCode() {
                </div>
 
                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Original URL</Label>
+                  <Label className="text-sm font-medium">Original URL</Label> {/* Use Label from ui/label */}
                   <p className="truncate text-muted-foreground text-sm rounded-md border bg-background p-3">
                      {result.originalUrl}
                   </p>
                 </div>
 
                <div className="flex flex-col items-center space-y-2 pt-4">
-                  <Label className="text-sm font-medium">QR Code (for Shortened URL)</Label>
+                  <Label className="text-sm font-medium">QR Code (for Shortened URL)</Label> {/* Use Label from ui/label */}
                   <div className="rounded-lg border p-2 bg-background shadow-sm">
                      <Image
                         src={result.qrCodeUrl}
@@ -280,18 +282,3 @@ export function UrlShortenerWithQrCode() {
     </Card>
   );
 }
-
-// Add Label component if not globally available (already defined in url-shortener-form, but good practice)
-const Label = React.forwardRef<
-  React.ElementRef<typeof FormLabel>,
-  React.ComponentPropsWithoutRef<typeof FormLabel>
->(({ className, ...props }, ref) => {
-  return (
-    <FormLabel
-      ref={ref}
-      className={cn("block", className)} // Ensure it's block for layout
-      {...props}
-    />
-  );
-});
-Label.displayName = 'Label';

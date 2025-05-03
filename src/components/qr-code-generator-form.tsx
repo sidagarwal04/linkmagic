@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Loader2, QrCodeIcon, Download } from "lucide-react";
 import Image from "next/image";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 import { Button } from "@/components/ui/button";
 import {
@@ -14,14 +15,15 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
+  FormLabel, // Import FormLabel from ui/form
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea"; // Use Textarea for more content
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { generateQrCode, type QrCodeData } from "@/services/qr-code";
-import { cn } from "@/lib/utils"; // Import cn
+import { Label } from "@/components/ui/label"; // Import Label from ui/label for direct use outside FormField
+
 
 const formSchema = z.object({
   data: z.string().min(1, { message: "Please enter text or a URL." }).max(500, { message: "Input cannot exceed 500 characters." }),
@@ -94,7 +96,7 @@ export function QrCodeGeneratorForm() {
               name="data"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Text or URL</FormLabel>
+                  <FormLabel>Text or URL</FormLabel> {/* Use FormLabel from ui/form */}
                   <FormControl>
                     <Textarea
                       placeholder="Enter the text or URL you want to encode..."
@@ -139,14 +141,14 @@ export function QrCodeGeneratorForm() {
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Encoded Data</Label>
+                  <Label className="text-sm font-medium">Encoded Data</Label> {/* Use Label from ui/label */}
                   <p className="text-muted-foreground text-sm rounded-md border bg-background p-3 break-all"> {/* Allow long text to break */}
                      {result.data}
                   </p>
                 </div>
 
                <div className="flex flex-col items-center space-y-2 pt-4">
-                  <Label className="text-sm font-medium">Generated QR Code</Label>
+                  <Label className="text-sm font-medium">Generated QR Code</Label> {/* Use Label from ui/label */}
                   <div className="rounded-lg border p-2 bg-background shadow-sm">
                      <Image
                         src={result.qrCodeUrl}
@@ -177,18 +179,3 @@ export function QrCodeGeneratorForm() {
     </Card>
   );
 }
-
-// Re-define Label locally as it's used here
-const Label = React.forwardRef<
-  React.ElementRef<typeof FormLabel>,
-  React.ComponentPropsWithoutRef<typeof FormLabel>
->(({ className, ...props }, ref) => {
-  return (
-    <FormLabel
-      ref={ref}
-      className={cn("block", className)}
-      {...props}
-    />
-  );
-});
-Label.displayName = 'Label';
