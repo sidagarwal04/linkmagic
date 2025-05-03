@@ -1,3 +1,4 @@
+
 import { Header } from "@/components/header";
 import { UrlShortenerWithQrCode } from "@/components/url-shortener-with-qrcode"; // Renamed component
 import { QrCodeGeneratorForm } from "@/components/qr-code-generator-form"; // New component
@@ -36,7 +37,7 @@ export default function Home() {
              <TabsContent value="qr-generator" className="mt-6">
                 {/* Content for QR Code Generator */}
                 <p className="text-center text-muted-foreground mb-4">
-                  Generate a QR code for any text or URL.
+                  Generate a QR code for any URL.
                 </p>
                 <QrCodeGeneratorForm />
              </TabsContent>

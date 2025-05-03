@@ -5,9 +5,9 @@ import React, { useState, useTransition } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Loader2, QrCodeIcon, Download } from "lucide-react";
+import { Loader2, QrCodeIcon, Download, Link2 } from "lucide-react"; // Added Link2 Icon
 import Image from "next/image";
-import { cn } from "@/lib/utils"; // Import cn utility
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,25 +15,26 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel, // Import FormLabel from ui/form
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea"; // Use Textarea for more content
+import { Input } from "@/components/ui/input"; // Use Input instead of Textarea
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { generateQrCode, type QrCodeData } from "@/services/qr-code";
-import { Label } from "@/components/ui/label"; // Import Label from ui/label for direct use outside FormField
+import { Label } from "@/components/ui/label";
 
 
+// Update schema to only accept valid URLs
 const formSchema = z.object({
-  data: z.string().min(1, { message: "Please enter text or a URL." }).max(500, { message: "Input cannot exceed 500 characters." }),
+  data: z.string().url({ message: "Please enter a valid URL." }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface QrCodeResult {
   qrCodeUrl: string;
-  data: string; // Store the original data used
+  data: string; // Store the original URL used
 }
 
 export function QrCodeGeneratorForm() {
@@ -69,8 +70,10 @@ export function QrCodeGeneratorForm() {
       } catch (error) {
         console.error("Error generating QR code:", error);
         let errorMessage = "Failed to generate QR code. Please try again.";
-         if (error instanceof Error && error.message.includes("exceeds maximum length")) {
+         if (error instanceof Error && error.message.includes("exceeds maximum length")) { // Keep size validation if needed
            errorMessage = error.message;
+         } else if (error instanceof Error && error.message.includes("QR code size")) {
+             errorMessage = error.message; // Keep size validation error
          }
 
         toast({
@@ -96,26 +99,27 @@ export function QrCodeGeneratorForm() {
               name="data"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Text or URL</FormLabel> {/* Use FormLabel from ui/form */}
+                  <FormLabel>URL to Encode</FormLabel> {/* Updated Label */}
                   <FormControl>
-                    <Textarea
-                      placeholder="Enter the text or URL you want to encode..."
-                      {...field}
-                      className="min-h-[100px]" // Give it a bit more height
-                      aria-label="Text or URL Input for QR Code"
-                    />
+                     <div className="relative"> {/* Added relative container for icon */}
+                       <Link2 className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" /> {/* Added Link Icon */}
+                       <Input // Changed to Input component
+                         placeholder="Enter the URL you want to encode..."
+                         {...field}
+                         className="pl-10" // Add padding for icon
+                         aria-label="URL Input for QR Code"
+                       />
+                     </div>
                   </FormControl>
                    <FormMessage />
-                   <p className="text-xs text-muted-foreground text-right">
-                    {form.watch('data').length} / 500 characters
-                   </p>
+                   {/* Removed character counter as it's less relevant for URLs */}
                 </FormItem>
               )}
             />
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" // Use primary color
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
               aria-label="Generate QR Code Button"
             >
               {isPending ? (
@@ -141,14 +145,14 @@ export function QrCodeGeneratorForm() {
             </CardHeader>
             <CardContent className="space-y-4">
                <div className="space-y-2">
-                  <Label className="text-sm font-medium">Encoded Data</Label> {/* Use Label from ui/label */}
-                  <p className="text-muted-foreground text-sm rounded-md border bg-background p-3 break-all"> {/* Allow long text to break */}
+                  <Label className="text-sm font-medium">Encoded URL</Label> {/* Updated Label */}
+                  <p className="text-muted-foreground text-sm rounded-md border bg-background p-3 break-all">
                      {result.data}
                   </p>
                 </div>
 
                <div className="flex flex-col items-center space-y-2 pt-4">
-                  <Label className="text-sm font-medium">Generated QR Code</Label> {/* Use Label from ui/label */}
+                  <Label className="text-sm font-medium">Generated QR Code</Label>
                   <div className="rounded-lg border p-2 bg-background shadow-sm">
                      <Image
                         src={result.qrCodeUrl}
@@ -166,7 +170,7 @@ export function QrCodeGeneratorForm() {
                     className="mt-2"
                     aria-label="Download QR Code Button"
                   >
-                    <a href={result.qrCodeUrl} download={`qrcode-${Date.now()}.png`}> {/* Generic filename */}
+                    <a href={result.qrCodeUrl} download={`qrcode-${Date.now()}.png`}>
                        <Download className="mr-2 h-4 w-4" />
                        Download QR
                      </a>

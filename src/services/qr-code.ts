@@ -1,9 +1,10 @@
+
 /**
  * Represents the data needed to generate a QR code.
  */
 export interface QrCodeData {
   /**
-   * The URL or text to be encoded in the QR code. Max length 500 chars.
+   * The URL to be encoded in the QR code. Max length 500 chars.
    */
   data: string;
   /**
@@ -40,7 +41,14 @@ export interface QrCode {
 export async function generateQrCode(qrCodeData: QrCodeData): Promise<QrCode> {
   const { data, size = 150, foregroundColor = '000000', backgroundColor = 'FFFFFF' } = qrCodeData;
 
+  // Basic validation for URL format - more robust validation happens via Zod in the form
+  if (!data.startsWith('http://') && !data.startsWith('https://')) {
+      // Note: This is a basic check. Zod schema handles the main validation.
+      console.warn("QR code data does not appear to be a standard URL.");
+  }
+
   if (data.length > 500) {
+    // Keep this check as a safeguard, though URLs are unlikely to hit this often
     throw new Error("QR code data exceeds maximum length of 500 characters.");
   }
   if (size > 1000) {
@@ -51,22 +59,6 @@ export async function generateQrCode(qrCodeData: QrCodeData): Promise<QrCode> {
   const apiUrl = `https://api.qrserver.com/v1/create-qr-code/?data=${encodedData}&size=${size}x${size}&color=${foregroundColor}&bgcolor=${backgroundColor}&format=png&qzone=1`; // qzone for quiet zone border
 
   try {
-    // In a browser environment, the URL itself can be used directly as the image source.
-    // No need to fetch and convert to base64 unless specifically required for embedding or other processing.
-    // If base64 is truly needed:
-    // const response = await fetch(apiUrl);
-    // if (!response.ok) {
-    //   throw new Error(`QR code generation failed with status: ${response.status}`);
-    // }
-    // const blob = await response.blob();
-    // const reader = new FileReader();
-    // const dataUrl = await new Promise<string>((resolve, reject) => {
-    //   reader.onloadend = () => resolve(reader.result as string);
-    //   reader.onerror = reject;
-    //   reader.readAsDataURL(blob);
-    // });
-    // return { imageUrl: dataUrl };
-
     // Return the API URL directly for use in <img> src
     return { imageUrl: apiUrl };
 
