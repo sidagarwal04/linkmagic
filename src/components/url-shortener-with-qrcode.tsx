@@ -186,8 +186,8 @@ export function UrlShortenerWithQrCode() {
               type="submit"
               disabled={isPending}
               className={cn(
-                "w-full text-accent-foreground transition-all duration-300 ease-in-out transform hover:scale-105",
-                 generateQr ? "bg-accent hover:bg-accent/90" : "bg-primary hover:bg-primary/90" // Dynamic background
+                "w-full transition-all duration-300 ease-in-out transform hover:scale-105",
+                "bg-primary hover:bg-primary/90 text-primary-foreground" // Use primary color consistently
               )}
               aria-label={generateQr ? "Shorten URL and Generate QR Code Button" : "Shorten URL Button"}
             >
@@ -284,3 +284,4 @@ export function UrlShortenerWithQrCode() {
     </Card>
   );
 }
+
