@@ -9,6 +9,9 @@ import { Loader2, QrCodeIcon, Download, Link2 } from "lucide-react"; // Added Li
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+import { saveAs } from "file-saver"; // Add this import at the top
+
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -167,8 +170,17 @@ export function QrCodeGeneratorForm() {
                     variant="outline"
                     size="sm"
                     asChild
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-2"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground mt-2"
                     aria-label="Download QR Code Button"
+                    onClick={async () => {
+                      try {
+                        const response = await fetch(result.qrCodeUrl); // Fetch the image
+                        const blob = await response.blob(); // Convert to blob
+                        saveAs(blob, "linkmagic-qr.png"); // Trigger download with file-saver
+                      } catch (error) {
+                        console.error("Failed to download QR code:", error);
+                      }
+                    }}
                   >
                     <a href={result.qrCodeUrl} download="linkmagic-qr.png">
                        <Download className="mr-2 h-4 w-4" />
