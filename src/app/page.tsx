@@ -1,15 +1,21 @@
 
+'use client'; // Keep as client component for Tabs and form interactions
+
 import { Header } from "@/components/header";
-import { UrlShortenerWithQrCode } from "@/components/url-shortener-with-qrcode"; // Renamed component
-import { QrCodeGeneratorForm } from "@/components/qr-code-generator-form"; // New component
+import { UrlShortenerWithQrCode } from "@/components/url-shortener-with-qrcode";
+import { QrCodeGeneratorForm } from "@/components/qr-code-generator-form";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LinkIcon, QrCodeIcon } from "lucide-react";
+// Removed auth-related imports
 
 export default function Home() {
+  // Removed useAuth hook
+
   return (
     <>
       <Header />
       <main className="flex-grow container mx-auto px-4 py-8 flex flex-col items-center">
+        {/* Removed conditional rendering based on user */}
         <div className="w-full max-w-2xl space-y-8">
            <h2 className="text-3xl font-bold text-center text-primary">
              LinkMagic Tools
@@ -28,14 +34,12 @@ export default function Home() {
                </TabsTrigger>
              </TabsList>
              <TabsContent value="shortener" className="mt-6">
-                {/* Content for URL Shortener */}
                 <p className="text-center text-muted-foreground mb-4">
                   Create short, memorable links and optionally generate a QR code for the shortened URL.
                 </p>
                 <UrlShortenerWithQrCode />
              </TabsContent>
              <TabsContent value="qr-generator" className="mt-6">
-                {/* Content for QR Code Generator */}
                 <p className="text-center text-muted-foreground mb-4">
                   Generate a QR code for any URL.
                 </p>
@@ -43,9 +47,10 @@ export default function Home() {
              </TabsContent>
            </Tabs>
         </div>
+        {/* Removed login prompt */}
       </main>
       <footer className="py-4 text-center text-muted-foreground text-sm border-t">
-        Built with ❤️ by <a href="http://meetsid.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Sid</a> using Firebase Studio
+         Built with ❤️ by <a href="http://meetsid.dev/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Sid</a> using Firebase Studio
       </footer>
     </>
   );

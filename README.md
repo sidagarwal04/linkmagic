@@ -1,6 +1,7 @@
+
 # LinkMagic - URL Shortener & QR Code Generator
 
-LinkMagic is a simple web application built with Next.js and Firebase that allows you to shorten long URLs and generate QR codes for them.
+LinkMagic is a simple web application built with Next.js that allows users to shorten long URLs and generate QR codes for them.
 
 ## Features
 
@@ -18,7 +19,7 @@ LinkMagic is a simple web application built with Next.js and Firebase that allow
 
 *   Node.js (v20 or later recommended)
 *   npm or yarn or pnpm
-*   A Firebase project (for deployment)
+*   A Firebase project (required only for deployment to Firebase Hosting)
 
 ### Installation
 
@@ -36,12 +37,28 @@ LinkMagic is a simple web application built with Next.js and Firebase that allow
     # pnpm install
     ```
 
+### Firebase Setup (Optional - For Deployment Only)
+
+If you plan to deploy using the included GitHub Actions workflow for Firebase Hosting:
+
+1.  **Create a Firebase Project:** If you don't have one, create a project at the [Firebase Console](https://console.firebase.google.com/).
+2.  **Add a Web App (if needed):** While authentication is not used, you might still need a web app configuration if you plan to use other Firebase services later. Copy the Firebase configuration object if you create one.
+3.  **Enable Firebase Hosting:** In your Firebase project settings, enable the Hosting service.
+
 ### Running Locally
 
-1.  **Set up environment variables (optional but recommended for Genkit features if added later):**
-    Create a `.env.local` file in the root directory and add any necessary API keys (e.g., for Google AI if you use Genkit).
+1.  **Set up environment variables (Optional - if using Firebase config):**
+    Create a `.env.local` file in the root directory. If you have Firebase configuration details (even if not using auth), you can add them here.
     ```
-    GOOGLE_GENAI_API_KEY=YOUR_API_KEY
+    # .env.local (Example - Add only if needed for other Firebase services)
+    # NEXT_PUBLIC_FIREBASE_API_KEY=YOUR_API_KEY
+    # NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=YOUR_PROJECT_ID.firebaseapp.com
+    # NEXT_PUBLIC_FIREBASE_PROJECT_ID=YOUR_PROJECT_ID
+    # NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=YOUR_PROJECT_ID.appspot.com
+    # NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=YOUR_SENDER_ID
+    # NEXT_PUBLIC_FIREBASE_APP_ID=YOUR_APP_ID
+
+    # GOOGLE_GENAI_API_KEY=YOUR_API_KEY # Only if using Genkit
     ```
 2.  **Run the development server:**
     ```bash
@@ -57,17 +74,15 @@ LinkMagic is a simple web application built with Next.js and Firebase that allow
 
 This project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) for deploying to **Firebase Hosting**.
 
-### Setup
+### Setup (GitHub Actions)
 
-1.  **Create a Firebase Project:** If you don't have one, create a project at the [Firebase Console](https://console.firebase.google.com/).
-2.  **Enable Firebase Hosting:** In your Firebase project settings, enable the Hosting service.
-3.  **Generate a Firebase Service Account Key:**
-    *   Go to Project settings > Service accounts.
+1.  **Generate a Firebase Service Account Key:**
+    *   Go to Project settings > Service accounts in the Firebase Console.
     *   Select "Node.js" and click "Generate new private key".
     *   Save the downloaded JSON file securely.
-4.  **Configure GitHub Secrets:** In your GitHub repository settings (Settings > Secrets and variables > Actions), add the following secrets:
+2.  **Configure GitHub Secrets:** In your GitHub repository settings (Settings > Secrets and variables > Actions), add the following secrets:
     *   `FIREBASE_PROJECT_ID`: Your Firebase Project ID.
-    *   `FIREBASE_SERVICE_ACCOUNT`: The **entire content** of the JSON service account key file you downloaded. Copy and paste the full JSON object.
+    *   `FIREBASE_SERVICE_ACCOUNT`: The **entire content** of the JSON service account key file you downloaded. Copy and paste the full JSON object. *Note: The workflow file might reference a different secret name like `FIREBASE_SERVICE_ACCOUNT_LINKMAGIC`. Ensure the name here matches the name used in your `.github/workflows/deploy.yml` file.*
 
 ### Deployment Process
 
@@ -90,3 +105,5 @@ This project includes a GitHub Actions workflow (`.github/workflows/deploy.yml`)
 ## Contributing
 
 Contributions are welcome! Please feel free to open an issue or submit a pull request.
+
+Developed by <a href="http://meetsid.dev/" target="_blank" rel="noopener noreferrer">Sid</a> using Firebase Studio
