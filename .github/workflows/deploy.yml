@@ -24,20 +24,25 @@ jobs:
       - name: Build Application
         run: npm run build
         env:
-          # Add any build-time environment variables here if needed
-          # EXAMPLE_VAR: ${{ secrets.EXAMPLE_SECRET }}
           # Ensure NEXT_PUBLIC_ variables needed at build time are available
           # If Genkit is used and needs API key at build time:
           # GOOGLE_GENAI_API_KEY: ${{ secrets.GOOGLE_GENAI_API_KEY }} # Only if required during build
-          NEXT_PUBLIC_EXAMPLE_VAR: "some_value"
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || '' }} # Optional: Add if you need base URL at build time
+          # FIREBASE_SERVICE_ACCOUNT is NOT typically needed during the build itself for client-side config
+          # It's primarily needed at RUNTIME for the admin SDK.
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/github-action-firebase-hosting@v0 # Keep v0 for now as it's widely used
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}" # Standard GitHub token
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}" # Use the secret name defined in repo settings
+          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LINKMAGIC }}" # Use the secret name defined in repo settings
           channelId: live # Deploy to the 'live' channel (default production)
           projectId: "${{ secrets.FIREBASE_PROJECT_ID }}" # Use the secret name defined in repo settings
         env:
-          # Ensure runtime environment variables needed by Firebase functions or Hosting rewrites are set if applicable
-          GOOGLE_GENAI_API_KEY: ${{ secrets.GOOGLE_GENAI_API_KEY }} # Pass API key if needed by server-side functions/Genkit at runtime
+          # Ensure runtime environment variables needed by Firebase functions or Hosting rewrites are set
+          # Crucially, provide the service account JSON for the Admin SDK runtime
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LINKMAGIC }}
+          # Provide GOOGLE_GENAI_API_KEY if Genkit is used at runtime
+          # GOOGLE_GENAI_API_KEY: ${{ secrets.GOOGLE_GENAI_API_KEY }}
+          # Provide Base URL if needed by server actions/redirects at runtime
+          NEXT_PUBLIC_BASE_URL: ${{ secrets.NEXT_PUBLIC_BASE_URL || '' }} # Make base URL available at runtime too
