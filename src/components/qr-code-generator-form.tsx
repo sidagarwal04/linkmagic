@@ -122,7 +122,7 @@ export function QrCodeGeneratorForm() {
             <Button
               type="submit"
               disabled={isPending}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" // Ensure primary color is used
               aria-label="Generate QR Code Button"
             >
               {isPending ? (
@@ -169,23 +169,26 @@ export function QrCodeGeneratorForm() {
                  <Button
                     variant="outline"
                     size="sm"
-                    asChild
-                    className="bg-primary hover:bg-primary/90 text-primary-foreground mt-2"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground mt-2" // Ensure primary color for download
                     aria-label="Download QR Code Button"
-                    onClick={async () => {
-                      try {
-                        const response = await fetch(result.qrCodeUrl); // Fetch the image
-                        const blob = await response.blob(); // Convert to blob
-                        saveAs(blob, "linkmagic-qr.png"); // Trigger download with file-saver
-                      } catch (error) {
-                        console.error("Failed to download QR code:", error);
-                      }
-                    }}
+                    onClick={async (e) => {
+                        e.preventDefault(); // Prevent default anchor behavior
+                        try {
+                          const response = await fetch(result.qrCodeUrl);
+                          const blob = await response.blob();
+                          saveAs(blob, "linkmagic-qr.png");
+                        } catch (error) {
+                          console.error("Failed to download QR code:", error);
+                          toast({
+                            title: "Error",
+                            description: "Failed to download QR code.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
                   >
-                    <a href={result.qrCodeUrl} download="linkmagic-qr.png">
                        <Download className="mr-2 h-4 w-4" />
                        Download QR
-                     </a>
                   </Button>
                 </div>
             </CardContent>

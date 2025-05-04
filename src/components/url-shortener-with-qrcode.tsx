@@ -60,16 +60,17 @@ export function UrlShortenerWithQrCode() {
     setCopied(false); // Reset copied state
 
     startTransition(async () => {
+      let shortUrlData: { shortUrl: string } | null = null; // Define outside try block
       try {
         // 1. Generate Short URL
-        const shortUrlData = await generateShortUrl({
+        shortUrlData = await generateShortUrl({
           originalUrl: values.longUrl,
         });
 
         let qrCodeImageUrl: string | null = null;
 
         // 2. Generate QR Code *only if* the switch is toggled on
-        if (generateQr) {
+        if (generateQr && shortUrlData) { // Check shortUrlData exists
           const qrCodeData: QrCodeData = { data: shortUrlData.shortUrl };
           const qrCodeResult = await generateQrCode(qrCodeData);
           qrCodeImageUrl = qrCodeResult.imageUrl;
@@ -77,7 +78,7 @@ export function UrlShortenerWithQrCode() {
              title: "Success!",
              description: "Your shortened URL and QR code have been generated.",
            });
-        } else {
+        } else if (shortUrlData) { // Short URL generated, but no QR
            toast({
             title: "Success!",
             description: "Your shortened URL has been generated.",
@@ -85,12 +86,15 @@ export function UrlShortenerWithQrCode() {
         }
 
 
-        // 3. Set Result State
-        setResult({
-          shortUrl: shortUrlData.shortUrl,
-          originalUrl: values.longUrl,
-          qrCodeUrl: qrCodeImageUrl, // Store null if QR wasn't generated
-        });
+        // 3. Set Result State (only if short URL succeeded)
+        if (shortUrlData) {
+            setResult({
+              shortUrl: shortUrlData.shortUrl,
+              originalUrl: values.longUrl,
+              qrCodeUrl: qrCodeImageUrl, // Store null if QR wasn't generated
+            });
+        }
+
 
       } catch (error) {
         console.error("Error processing URL:", error);
@@ -100,8 +104,10 @@ export function UrlShortenerWithQrCode() {
              errorMessage = "The URL provided seems invalid. Please check and try again.";
            } else if (generateQr && error.message.includes("QR code")) { // Check if error happened during QR generation
               errorMessage = "Failed to generate QR code. Short URL might still be created.";
-              // Optionally set a partial result if short URL succeeded but QR failed
-              // setResult({ shortUrl: shortUrlData?.shortUrl ?? 'Error', originalUrl: values.longUrl, qrCodeUrl: null });
+              // Set partial result if short URL succeeded but QR failed
+              if (shortUrlData) {
+                 setResult({ shortUrl: shortUrlData.shortUrl, originalUrl: values.longUrl, qrCodeUrl: null });
+              }
            } else {
               errorMessage = "Failed to shorten URL. Please try again.";
            }
@@ -112,8 +118,10 @@ export function UrlShortenerWithQrCode() {
           description: errorMessage,
           variant: "destructive",
         });
-        // Keep result cleared on error unless partially set above
-        // setResult(null);
+        // Ensure result is cleared if shortening failed completely
+        if (!shortUrlData) {
+            setResult(null);
+        }
       }
     });
   }
@@ -189,7 +197,7 @@ export function UrlShortenerWithQrCode() {
               disabled={isPending}
               className={cn(
                 "w-full transition-all duration-300 ease-in-out transform hover:scale-105",
-                 generateQr ? "bg-accent hover:bg-accent/90 text-accent-foreground" : "bg-primary hover:bg-primary/90 text-primary-foreground" // Conditional styling based on generateQr state
+                 "bg-primary hover:bg-primary/90 text-primary-foreground" // Always use primary color
                )}
               aria-label={generateQr ? "Shorten URL and Generate QR Code Button" : "Shorten URL Button"}
             >
@@ -268,23 +276,26 @@ export function UrlShortenerWithQrCode() {
                    <Button
                       variant="outline"
                       size="sm"
-                      asChild
-                      className="mt-2"
+                      className="mt-2 bg-primary hover:bg-primary/90 text-primary-foreground" // Use primary for download button too
                       aria-label="Download QR Code Button"
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        e.preventDefault(); // Prevent default anchor behavior if wrapped
                         try {
-                          const response = await fetch(result.qrCodeUrl); // Fetch the image
-                          const blob = await response.blob(); // Convert to blob
-                          saveAs(blob, "linkmagic-qr.png"); // Trigger download with file-saver
+                          const response = await fetch(result.qrCodeUrl!); // Add non-null assertion
+                          const blob = await response.blob();
+                          saveAs(blob, "linkmagic-qr.png");
                         } catch (error) {
                           console.error("Failed to download QR code:", error);
+                           toast({
+                             title: "Error",
+                             description: "Failed to download QR code.",
+                             variant: "destructive",
+                           });
                         }
                       }}
                     >
-                      <a href={result.qrCodeUrl} download="linkmagic-qr.png">
                          <Download className="mr-2 h-4 w-4" />
                          Download QR
-                       </a>
                     </Button>
                   </div>
                )}
