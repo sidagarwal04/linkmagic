@@ -28,7 +28,7 @@ export async function generateShortUrl(input: ShortenUrlInput): Promise<ShortenU
 
   // Simulate generating a short code
   const shortCode = Math.random().toString(36).substring(2, 8);
-  const shortUrl = `https://linkwi.se/${shortCode}`; // Replace with your actual domain
+  const shortUrl = `https://linkmagic.meetsid.dev/${shortCode}`; // Replace with your actual domain
 
   console.log("Server Action: generated short URL:", shortUrl);
 
