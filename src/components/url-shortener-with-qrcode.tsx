@@ -10,6 +10,8 @@ import { Link2, Loader2, QrCodeIcon, Scissors, Copy, Check, Download } from "luc
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+import { saveAs } from "file-saver";
+
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -269,8 +271,17 @@ export function UrlShortenerWithQrCode() {
                       asChild
                       className="mt-2"
                       aria-label="Download QR Code Button"
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(result.qrCodeUrl); // Fetch the image
+                          const blob = await response.blob(); // Convert to blob
+                          saveAs(blob, "linkmagic-qr.png"); // Trigger download with file-saver
+                        } catch (error) {
+                          console.error("Failed to download QR code:", error);
+                        }
+                      }}
                     >
-                      <a href={result.qrCodeUrl} download={`${result.shortUrl.split('/').pop() || 'qrcode'}.png`}>
+                      <a href={result.qrCodeUrl} download="linkmagic-qr.png">
                          <Download className="mr-2 h-4 w-4" />
                          Download QR
                        </a>
